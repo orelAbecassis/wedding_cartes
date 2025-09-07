@@ -4,21 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mariage — Réception & RSVP</title>
+
+  <!-- Polices / Styles -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+
+  <!-- App -->
   <script type="module">
     import { mountCountdown, mountRSVP } from './app.js';
+    // (optionnel) petit rappel du décompte en haut de la page
     mountCountdown("2025-11-04T14:00:00+01:00");
+    // branche le formulaire au backend /api/rsvp
     mountRSVP();
   </script>
 </head>
-<body>
-  <div class="carte">
-    <h1 class="names">Eléazar &amp; Ahinoam</h1>
-    <p class="subline">Mairie &amp; Houppa</p>
 
-    <!-- (optionnel) rappel compte à rebours -->
+<body>
+  <div class="carte" role="region" aria-labelledby="titre-carte">
+    <h1 id="titre-carte" class="names">Eléazar &amp; Ahinoam</h1>
+    <p class="subline">Réception &amp; RSVP</p>
+
+    <!-- Compte à rebours (facultatif, tu peux supprimer ce bloc si tu veux 100% focalisé formulaire) -->
     <section aria-label="Compte à rebours" class="countdown" id="countdown">
       <div class="tile"><div class="num" id="d">–</div><div class="lbl">Jours</div></div>
       <div class="tile"><div class="num" id="h">–</div><div class="lbl">Heures</div></div>
@@ -28,41 +35,38 @@
 
     <div class="divider" aria-hidden="true"></div>
 
-    <!-- Formulaire RSVP -->
-    <form id="rsvp" aria-label="Formulaire RSVP">
-      <h2 class="subline" style="margin:0 0 8px; font-weight:600;">Formulaire de réponse</h2>
+    <!-- ====== FORMULAIRE PRINCIPAL ====== -->
+    <form id="rsvp" aria-label="Formulaire de réponse">
+      <h2 class="subline" style="margin:0 0 8px; font-weight:600;">Confirmez votre présence</h2>
 
+      <!-- Nom -->
       <label for="name">Nom &amp; Prénom</label>
-      <input id="name" name="name" placeholder="Ex: Sarah Cohen" required />
+      <input id="name" name="name" placeholder="Ex : Sarah Cohen" autocomplete="name" required />
 
       <hr style="border:none;border-top:1px solid #eee;margin:14px 0;">
 
-      <label for="mairie">Présence à la Mairie</label>
-      <select id="mairie" name="mairie" required>
-        <option value="">Choisir…</option>
-        <option value="Oui">Oui</option>
-        <option value="Non">Non</option>
-      </select>
-
-      <label for="nbMairie">Nombre de personnes (Mairie)</label>
-      <input id="nbMairie" name="nbMairie" type="number" min="0" value="0" required />
-
-      <label for="reception">Présence à la Houppa/Réception</label>
+      <!-- Présence réception -->
+      <label for="reception">Présence à la Houppa / Réception</label>
       <select id="reception" name="reception" required>
         <option value="">Choisir…</option>
         <option value="Oui">Oui</option>
         <option value="Non">Non</option>
       </select>
 
+      <!-- Nombre de personnes -->
       <label for="nbHouppa">Nombre de personnes (Houppa/Réception)</label>
-      <input id="nbHouppa" name="nbHouppa" type="number" min="0" value="0" required />
+      <input id="nbHouppa" name="nbHouppa" type="number" min="0" value="0" inputmode="numeric" required />
 
+      <!-- Message -->
       <label for="message">Message pour les mariés (optionnel)</label>
       <textarea id="message" name="message" placeholder="Un petit mot pour les mariés…"></textarea>
 
+      <!-- Actions -->
       <div class="actions">
-        <button class="primary" id="sendBtn" type="submit">Envoyer</button>
+        <button class="primary" id="sendBtn" type="submit">Envoyer ma réponse</button>
       </div>
+
+      <!-- Statut (succès/erreur) -->
       <p id="status" class="small-note" role="status" aria-live="polite"></p>
     </form>
 

@@ -7,60 +7,95 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// chemins ESM
+// ESM paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --- App Express
+// ---- Env (sécurisation: trim)
+const NOTION_TOKEN = (process.env.NOTION_TOKEN || "").trim();
+const NOTION_DB_ID = (process.env.NOTION_DB_ID || "").trim();
+
+// ---- App
 const app = express();
-app.use(express.json({ limit: "1mb" }));
-app.use(express.static(path.join(__dirname, "public"))); // sert public/index.html
 
-// --- Notion
-const notion = new Client({ auth: process.env.NOTION_TOKEN });
-const databaseId = process.env.NOTION_DB_ID;
-
-app.get("/health", (_, res) =>
-  res.json({ ok: true, hasToken: !!process.env.NOTION_TOKEN, hasDb: !!process.env.NOTION_DB_ID })
+// Static avec cache fort (1 jour) + ETag
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    etag: true,
+    lastModified: true,
+    maxAge: "1d",
+    immutable: false,
+    setHeaders: (res) => {
+      res.setHeader("X-Content-Type-Options", "nosniff");
+    }
+  })
 );
 
-// ====== FORMULAIRE ======
+// JSON parser (léger)
+app.use(express.json({ limit: "32kb", type: "application/json" }));
+
+// ---- Notion
+const notion = new Client({ auth: NOTION_TOKEN });
+
+// Utils
+const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+const isOuiNon = (v) => v === "Oui" || v === "Non";
+
+// Health
+app.get("/health", (_req, res) => {
+  res.json({
+    ok: true,
+    env: {
+      hasToken: !!NOTION_TOKEN,
+      hasDb: !!NOTION_DB_ID
+    }
+  });
+});
+
+// ====== API RSVP ======
 app.post("/api/rsvp", async (req, res) => {
   try {
-    console.log("RSVP payload =>", req.body); // debug utile
+    // Validation & normalisation
+    const name = String(req.body?.name ?? "").trim();
+    const reception = String(req.body?.reception ?? "").trim();
+    const nbHouppa = clamp(Number.isFinite(+req.body?.nbHouppa) ? +req.body.nbHouppa : 0, 0, 50);
+    const message = String(req.body?.message ?? "").slice(0, 1000);
 
-    const { name, mairie, nbMairie, reception, nbHouppa, message } = req.body;
-    if (!name) return res.status(400).json({ ok: false, error: "missing_name" });
+    if (!name) {
+      return res.status(400).json({ ok: false, error: "missing_name" });
+    }
+    if (reception && !isOuiNon(reception)) {
+      return res.status(400).json({ ok: false, error: "invalid_reception" });
+    }
+
+    const finalNbHouppa = reception === "Non" ? 0 : nbHouppa;
 
     const props = {
       "Nom Prénom": { title: [{ text: { content: name } }] },
-      "nbPers_mairie": { number: Number.isFinite(+nbMairie) ? +nbMairie : 0 },
-      "nbPers_houppa": { number: Number.isFinite(+nbHouppa) ? +nbHouppa : 0 },
-      "Message_maries": { rich_text: [{ text: { content: message || "" } }] }
+      "nbPers_houppa": { number: finalNbHouppa },
     };
-    if (mairie)    props["Mairie"]    = { select: { name: mairie } };      // "Oui"/"Non"
     if (reception) props["reception"] = { select: { name: reception } };
+    if (message)   props["Message_maries"] = { rich_text: [{ text: { content: message } }] };
 
-    const result = await notion.pages.create({
-      parent: { database_id: databaseId },
-      properties: props
+    const created = await notion.pages.create({
+      parent: { database_id: NOTION_DB_ID },
+      properties: props,
     });
 
-    res.status(200).json({ ok: true, id: result.id });
+    return res.status(200).json({ ok: true, id: created.id });
   } catch (err) {
-    console.error("Notion error:", err?.body || err?.message || err);
-    res.status(500).json({
-      ok: false,
-      error: "notion_error",
-      detail: err?.body || err?.message || "unknown"
-    });
+    const detail = err?.body || err?.message || String(err);
+    console.error("[Notion] create page error:", detail);
+    return res.status(500).json({ ok: false, error: "notion_error", detail });
   }
 });
 
-// Fallback (Express 5 OK) pour toutes les routes hors /api
-app.get(/^\/(?!api\/).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "mairie.html"));
+// Fallback → sert public/form.html
+app.get(/^\/(?!api\/).*/, (_req, res) => {
+  res.sendFile(path.join(__dirname, "public", "form.html"));
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`✅ Server running: http://localhost:${port}`));
+app.listen(port, () => {
+  console.log(`✅ Server running: http://localhost:${port}`);
+});
