@@ -59,7 +59,7 @@ app.post("/api/rsvp", async (req, res) => {
 
 // Fallback (Express 5 OK) pour toutes les routes hors /api
 app.get(/^\/(?!api\/).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "mairie.html"));
 });
 
 const port = process.env.PORT || 3000;
