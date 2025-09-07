@@ -8,6 +8,7 @@
   --ring:#A882B7; 
   --surface:#fff; 
   --bg:#f7f3f9;
+  --card-w: 1100px; 
 }
 
 * { box-sizing: border-box; margin:0; padding:0; }
@@ -72,10 +73,9 @@ body {
   width: 100%;
   max-width: var(--card-w);
   background: var(--surface);
-  border-radius: 18px;
-  box-shadow: 0 8px 28px rgba(33,12,54,.08);
-  padding: 40px 36px 28px;
-  margin: auto;
+  border-radius: 22px; /* un peu plus arrondi */
+  box-shadow: 0 10px 36px rgba(33,12,54,.12);
+  padding: 60px 50px 40px; /* + de place autour du texte */
 }
 
 h1.names {
@@ -108,13 +108,13 @@ h1.names {
 
 .block { 
   text-align: center; 
-  font-size: 19px; 
+  font-size: 26px; 
   margin: 10px 0; 
 }
 
 .small-note { 
   text-align: center; 
-  font-size: 16px; 
+  font-size: 22px; 
   color: var(--muted); 
   margin-top: 6px; 
 }
@@ -132,7 +132,7 @@ a {
 }
 .families .col { 
   font-family: "Great Vibes", cursive; 
-  font-size: 28px; 
+  font-size: 40px; 
 }
 .families .left { text-align: left } 
 .families .right { text-align: right }
