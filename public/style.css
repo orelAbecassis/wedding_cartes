@@ -123,6 +123,11 @@ a {
   color: #5a3d8f; 
   text-decoration: none; 
 }
+.line-break {
+  display: inline-block;
+  margin-top: 20px;    /* espace vertical entre les deux lignes */
+  padding-left: 20px;   /* espace horizontal avant le prénom suivant */
+}
 
 .families {
   display: grid; 
