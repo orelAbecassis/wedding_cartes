@@ -56,26 +56,37 @@ app.get("/health", (_req, res) => {
 app.post("/api/rsvp", async (req, res) => {
   try {
     // Validation & normalisation
-    const name = String(req.body?.name ?? "").trim();
-    const reception = String(req.body?.reception ?? "").trim();
-    const nbHouppa = clamp(Number.isFinite(+req.body?.nbHouppa) ? +req.body.nbHouppa : 0, 0, 50);
-    const message = String(req.body?.message ?? "").slice(0, 1000);
+  const name = String(req.body?.nom_prenom ?? "").trim();
+  const fiancaille = String(req.body?.fiancaille ?? "").trim();
+  const nbFiancaille = clamp(Number.isFinite(+req.body?.nb_fiancaille) ? +req.body.nb_fiancaille : 0, 0, 50);
+  const reception = String(req.body?.reception ?? "").trim();
+  const nbHouppa = clamp(Number.isFinite(+req.body?.nb_reception) ? +req.body.nb_reception : 0, 0, 50);
+  const message = String(req.body?.message_maries ?? "").slice(0, 1000);
+
 
     if (!name) {
       return res.status(400).json({ ok: false, error: "missing_name" });
+    }
+    if (fiancaille && !isOuiNon(fiancaille)) {
+      return res.status(400).json({ ok: false, error: "invalid_fiancaille" });
     }
     if (reception && !isOuiNon(reception)) {
       return res.status(400).json({ ok: false, error: "invalid_reception" });
     }
 
+    const finalNbFiancaille = fiancaille === "Non" ? 0 : nbFiancaille;
     const finalNbHouppa = reception === "Non" ? 0 : nbHouppa;
 
     const props = {
-      "Nom Prénom": { title: [{ text: { content: name } }] },
-      "nbPers_houppa": { number: finalNbHouppa },
+      "Nom Prenom": { title: [{ text: { content: name } }] },
+      "nb_fiancaille": { number: finalNbFiancaille },
+      "nb_reception": { number: finalNbHouppa },
     };
+    if (fiancaille) props["fiancaille"] = { select: { name: fiancaille } };
     if (reception) props["reception"] = { select: { name: reception } };
-    if (message)   props["Message_maries"] = { rich_text: [{ text: { content: message } }] };
+    if (message) props["Message_maries"] = { rich_text: [{ text: { content: message } }] };
+
+    console.log("Props envoyées à Notion:", JSON.stringify(props, null, 2));
 
     const created = await notion.pages.create({
       parent: { database_id: NOTION_DB_ID },

@@ -13,19 +13,19 @@
   <!-- App -->
   <script type="module">
     import { mountCountdown, mountRSVP } from './app.js';
-    // (optionnel) petit rappel du décompte en haut de la page
-    mountCountdown("2025-11-04T14:00:00+01:00");
-    // branche le formulaire au backend /api/rsvp
-    mountRSVP();
+    document.addEventListener("DOMContentLoaded", () => {
+      mountCountdown("2025-11-04T14:00:00+01:00");
+      mountRSVP();
+    });
   </script>
 </head>
 
 <body>
   <div class="carte" role="region" aria-labelledby="titre-carte">
     <h1 id="titre-carte" class="names">Eléazar &amp; Ahinoam</h1>
-    <p class="subline">Réception &amp; RSVP</p>
+    <p class="subline">Réception &amp; Fiançailles</p>
 
-    <!-- Compte à rebours (facultatif, tu peux supprimer ce bloc si tu veux 100% focalisé formulaire) -->
+    <!-- Compte à rebours -->
     <section aria-label="Compte à rebours" class="countdown" id="countdown">
       <div class="tile"><div class="num" id="d">–</div><div class="lbl">Jours</div></div>
       <div class="tile"><div class="num" id="h">–</div><div class="lbl">Heures</div></div>
@@ -40,8 +40,22 @@
       <h2 class="subline" style="margin:0 0 8px; font-weight:600;">Confirmez votre présence</h2>
 
       <!-- Nom -->
-      <label for="name">Nom &amp; Prénom</label>
-      <input id="name" name="name" placeholder="Ex : Sarah Cohen" autocomplete="name" required />
+      <label for="nom_prenom">Nom &amp; Prénom</label>
+      <input id="nom_prenom" name="nom_prenom" placeholder="Ex : Sarah Cohen" autocomplete="name" required />
+
+      <hr style="border:none;border-top:1px solid #eee;margin:14px 0;">
+
+      <!-- Présence fiançailles -->
+      <label for="fiancaille">Présence aux Fiançailles</label>
+      <select id="fiancaille" name="fiancaille" required>
+        <option value="">Choisir…</option>
+        <option value="Oui">Oui</option>
+        <option value="Non">Non</option>
+      </select>
+
+      <!-- Nombre de personnes fiançailles -->
+      <label for="nb_fiancaille">Nombre de personnes (Fiançailles)</label>
+      <input id="nb_fiancaille" name="nb_fiancaille" type="number" min="0" value="0" inputmode="numeric" required />
 
       <hr style="border:none;border-top:1px solid #eee;margin:14px 0;">
 
@@ -53,13 +67,13 @@
         <option value="Non">Non</option>
       </select>
 
-      <!-- Nombre de personnes -->
-      <label for="nbHouppa">Nombre de personnes (Houppa/Réception)</label>
-      <input id="nbHouppa" name="nbHouppa" type="number" min="0" value="0" inputmode="numeric" required />
+      <!-- Nombre de personnes réception -->
+      <label for="nb_reception">Nombre de personnes (Houppa/Réception)</label>
+      <input id="nb_reception" name="nb_reception" type="number" min="0" value="0" inputmode="numeric" required />
 
       <!-- Message -->
-      <label for="message">Message pour les mariés (optionnel)</label>
-      <textarea id="message" name="message" placeholder="Un petit mot pour les mariés…"></textarea>
+      <label for="message_maries">Message pour les mariés (optionnel)</label>
+      <textarea id="message_maries" name="message_maries" placeholder="Un petit mot pour les mariés…"></textarea>
 
       <!-- Actions -->
       <div class="actions">
