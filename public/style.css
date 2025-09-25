@@ -4,11 +4,10 @@
   --brand:#9a7ab3; 
   --brand2:#c7a9d7; 
   --gold:#B08D57;
-  --card-w:860px; 
   --ring:#A882B7; 
   --surface:#fff; 
   --bg:#f7f3f9;
-  --card-w: 1100px; 
+  --card-w:1100px; /* largeur max desktop */
 }
 
 * { box-sizing: border-box; margin:0; padding:0; }
@@ -24,7 +23,7 @@ body {
   padding: 24px;
 }
 
-/* ==== PAGE D'ACCUEIL (index) ==== */
+/* ==== PAGE D'ACCUEIL ==== */
 .hero {
   width: 100%;
   max-width: 1000px;
@@ -39,19 +38,18 @@ body {
     linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.88)),
     url("img/hero.jpg") center/cover no-repeat;
   text-align: center;
-  overflow: visible;            
   padding: 56px 36px 48px; 
 }
 
-.monogram{
+.monogram {
   font-family:"Great Vibes", cursive;
-  font-size: 76px;              /* keep big, adjust as you like */
-  line-height: 1.25;            /* <— more headroom */
+  font-size: 76px;
+  line-height: 1.25;
   letter-spacing:.03em;
   background:linear-gradient(180deg,#d7b97d,#a98243);
   -webkit-background-clip:text; background-clip:text; color:transparent;
   display:block;
-  padding-top: 8px;             /* <— small top padding */
+  padding-top: 8px;
   padding-bottom: 4px;
   margin: 0 0 12px;
 }
@@ -73,9 +71,9 @@ body {
   width: 100%;
   max-width: var(--card-w);
   background: var(--surface);
-  border-radius: 22px; /* un peu plus arrondi */
+  border-radius: 22px;
   box-shadow: 0 10px 36px rgba(33,12,54,.12);
-  padding: 60px 50px 40px; /* + de place autour du texte */
+  padding: 60px 50px 40px;
 }
 
 h1.names {
@@ -119,14 +117,10 @@ h1.names {
   margin-top: 6px; 
 }
 
-a { 
-  color: #5a3d8f; 
-  text-decoration: none; 
-}
 .line-break {
   display: inline-block;
-  margin-top: 20px;    /* espace vertical entre les deux lignes */
-  padding-left: 20px;   /* espace horizontal avant le prénom suivant */
+  margin-top: 20px;
+  padding-left: 20px;
 }
 
 .families {
@@ -137,7 +131,7 @@ a {
 }
 .families .col { 
   font-family: "Great Vibes", cursive; 
-  font-size: 40px; 
+  font-size: 1.5rem;
 }
 .families .left { text-align: left } 
 .families .right { text-align: right }
@@ -220,10 +214,30 @@ textarea { min-height: 110px; resize: vertical; }
 .is-err { color: #a40028 } 
 .is-wait { color: #6c6272 }
 
-/* ==== Responsive ==== */
+/* ==== RESPONSIVE ==== */
+
+/* Tablette (max 1024px) */
+@media (max-width:1024px) {
+  .carte { padding: 40px 28px 32px; }
+  h1.names { font-size: 52px; }
+  .oui { font-size: 48px; }
+  .families { gap: 16px; }
+}
+
+/* Mobile (max 640px) */
 @media (max-width:640px) {
-  h1.names { font-size: 44px } 
-  .oui { font-size: 44px }
+  body { padding: 12px; }
+  .hero { padding: 36px 18px 28px; }
+  h1.names { font-size: 40px; }
+  .oui { font-size: 38px; }
+  .subline, .date-time, .small-note { font-size: 18px; }
+  .block { font-size: 20px; }
   .families { grid-template-columns: 1fr; gap: 8px; }
-  .families .col { text-align: center; }
+  .families .col { text-align: center; font-size: 1.2rem; }
+  .countdown { flex-direction: column; gap: 8px; }
+  .tile .num { font-size: 28px; }
+  .tile .lbl { font-size: 10px; }
+  form { padding: 14px; }
+  label { font-size: 14px; }
+  input, select, textarea { font-size: 14px; padding: 10px 12px; }
 }
